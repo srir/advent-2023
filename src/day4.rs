@@ -29,6 +29,10 @@ lazy_static! {
     static ref NUM_REGEX: Regex = Regex::new(r"\d+").unwrap();
 }
 
+fn parse_numbers(s: &str) -> Result<Vec<usize>, ()> {
+    NUM_REGEX.find_iter(s).map(|n| n.as_str().parse()).collect::<Result<_, _>>().map_err(|_| ())
+}
+
 impl FromStr for Card {
     type Err = ();
 
@@ -36,8 +40,8 @@ impl FromStr for Card {
         let (_, rest) = s.split_once(":").ok_or(())?;
         let (winning, card) = rest.split_once("|").ok_or(())?;
 
-        let winning_numbers = NUM_REGEX.find_iter(winning).map(|n| n.as_str().parse().unwrap()).collect();
-        let card_numbers = NUM_REGEX.find_iter(card).map(|n| n.as_str().parse().unwrap()).collect();
+        let winning_numbers = parse_numbers(winning)?;
+        let card_numbers = parse_numbers(card)?;
 
         Ok(Card { winning_numbers, card_numbers })
     }
