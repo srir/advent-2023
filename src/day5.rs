@@ -21,6 +21,17 @@ impl SeedRange {
 
         Some(dest)
     }
+
+    fn map_rev(&self, dest: usize) -> Option<usize> {
+        if dest < self.dest_range_start || dest >= self.dest_range_start + self.range_length {
+            return None;
+        }
+
+        let offset = dest - self.dest_range_start;
+        let src = self.src_range_start + offset;
+
+        Some(src)
+    }
 }
 
 impl FromStr for SeedRange {
@@ -57,6 +68,16 @@ impl SeedMap {
 
         src
     }
+
+    fn map_rev(&self, dest: usize) -> usize {
+        for range in &self.ranges {
+            if let Some(src) = range.map_rev(dest) {
+                return src;
+            }
+        }
+
+        dest
+    }
 }
 
 impl FromStr for SeedMap {
@@ -81,7 +102,8 @@ impl FromStr for SeedMap {
 #[derive(Debug, Clone)]
 struct SeedMapSet {
     seeds: Vec<usize>,
-    maps: HashMap<String, SeedMap>,
+    maps_by_src: HashMap<String, SeedMap>,
+    maps_by_dest: HashMap<String, SeedMap>,
 
     _dest_cache: HashMap<(String, usize), usize>,
     _location_cache: HashMap<usize, usize>
@@ -89,34 +111,39 @@ struct SeedMapSet {
 
 impl SeedMapSet {
     fn new(seeds: Vec<usize>, maps: HashMap<String, SeedMap>) -> Self {
+        let maps_by_dest = maps
+            .clone()
+            .into_iter()
+            .map(|(_k, v)| (v.dest_category.clone(), v))
+            .collect::<HashMap<_, _>>();
+
         SeedMapSet {
             seeds,
-            maps,
+            maps_by_src: maps,
+            maps_by_dest,
             _dest_cache: HashMap::new(),
             _location_cache: HashMap::new()
         }
     }
 
-    fn map(&mut self, src_category: &str, src: usize) -> (String, usize) {
-        let map = self.maps.get(src_category).unwrap();
-
-        if let Some(dest) = self._dest_cache.get(&(src_category.to_string(), src)) {
-            return (map.dest_category.clone(), *dest);
-        }
+    fn map(&self, src_category: &str, src: usize) -> (String, usize) {
+        let map = self.maps_by_src.get(src_category).unwrap();
 
         let dest = map.map(src);
-        self._dest_cache.insert((src_category.to_string(), src), dest);
 
         (map.dest_category.clone(), dest)
     }
 
-    fn map_seed_to_location(&mut self, src: usize) -> usize {
+    fn map_rev(&self, dest_category: &str, dest: usize) -> (String, usize) {
+        let map = self.maps_by_dest.get(dest_category).unwrap();
+        let src = map.map_rev(dest);
+
+        (map.source_category.clone(), src)
+    }
+
+    fn map_seed_to_location(&self, src: usize) -> usize {
         let mut dest = src;
         let mut category: String = "seed".to_string();
-
-        if let Some(location) = self._location_cache.get(&src) {
-            return *location;
-        }
 
         while category != "location" {
             let (next_category, next_dest) = self.map(&category, dest);
@@ -124,38 +151,54 @@ impl SeedMapSet {
             category = next_category;
         }
 
-        self._location_cache.insert(src, dest);
         dest
     }
 
-    fn map_seeds_to_locations(&mut self) -> Vec<usize> {
-        let seeds = self.seeds.clone();
-
-        seeds.iter().map(|s| self.map_seed_to_location(*s)).collect()
+    fn map_seeds_to_locations(&self) -> Vec<usize> {
+        self.seeds.iter().map(|s| self.map_seed_to_location(*s)).collect()
     }
 
-    fn lowest_location(&mut self) -> usize {
-        *self.map_seeds_to_locations().iter().min().unwrap()
+    fn lowest_location(&self) -> usize {
+        self.map_seeds_to_locations().iter().min().unwrap().clone()
     }
 
-    fn lowest_location_from_ranges(&mut self) -> usize {
-        let ranges = self.seeds.clone();
-        let mut min = None;
+    fn map_location_to_seed(&self, dest: usize) -> usize {
+        let mut src = dest;
+        let mut category: String = "location".to_string();
 
-        for range in ranges.chunks(2) {
+        while category != "seed" {
+            let (next_category, next_src) = self.map_rev(&category, src);
+            src = next_src;
+            category = next_category;
+        }
+
+        src
+    }
+
+    fn lowest_location_from_ranges(&self) -> usize {
+        let mut i = 0usize;
+        let mut ranges: Vec<(usize, usize)> = Vec::new();
+
+        for range in self.seeds.chunks(2) {
             let start = range[0];
             let length = range[1];
 
-            for i in start..(start + length) {
-                let location = self.map_seed_to_location(i);
-                if min.is_none() || location < min.unwrap() {
-                    min = Some(location);
-                }
-            }
+            ranges.push((start, length));
         }
 
-        min.unwrap()
+        while !ranges.iter().any(|r| range_contains(r, self.map_location_to_seed(i))) {
+            i += 1;
+        }
+
+        i
     }
+}
+
+fn range_contains(range: &(usize, usize), n: usize) -> bool {
+    let (start, length) = range;
+    let end = start + length;
+
+    n >= *start && n < end
 }
 
 impl FromStr for SeedMapSet {
@@ -184,13 +227,11 @@ fn parse_maps(input: &str) -> SeedMapSet {
 }
 
 #[aoc(day5, part1)]
-fn part1(input: &SeedMapSet) -> usize {
-    let mut mapset = input.clone();
+fn part1(mapset: &SeedMapSet) -> usize {
     mapset.lowest_location()
 }
 
 #[aoc(day5, part2)]
-fn part2(input: &SeedMapSet) -> usize {
-    let mut mapset = input.clone();
+fn part2(mapset: &SeedMapSet) -> usize {
     mapset.lowest_location_from_ranges()
 }
