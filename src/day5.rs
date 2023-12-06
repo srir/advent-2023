@@ -1,10 +1,7 @@
 use std::collections::HashMap;
 use std::str::FromStr;
 use aoc_runner_derive::{aoc, aoc_generator};
-
-fn parse_numbers(s: &str) -> Result<Vec<usize>, ()> {
-    s.split_whitespace().map(|n| n.parse()).collect::<Result<_, _>>().map_err(|_| ())
-}
+use crate::util::parse_numbers;
 
 #[derive(Debug, Clone)]
 struct SeedRange {
