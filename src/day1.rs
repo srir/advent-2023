@@ -9,7 +9,7 @@ pub fn input_generator(input: &str) -> Vec<String> {
 #[derive(Debug)]
 struct CalibrationValue {
     first: u32,
-    last: u32
+    last: u32,
 }
 
 fn word_to_number(word: &str) -> Option<u32> {
@@ -23,7 +23,7 @@ fn word_to_number(word: &str) -> Option<u32> {
         "seven" => Some(7),
         "eight" => Some(8),
         "nine" => Some(9),
-        _ => None
+        _ => None,
     }
 }
 
@@ -44,7 +44,7 @@ impl CalibrationValue {
 
         Self {
             first: first.unwrap(),
-            last: last.unwrap()
+            last: last.unwrap(),
         }
     }
 
@@ -71,7 +71,7 @@ impl CalibrationValue {
             }
 
             if c.is_alphabetic() {
-                let current_word = &s[..i+1];
+                let current_word = &s[..i + 1];
 
                 if let Some(end_match) = re_end.find(&current_word) {
                     last_word_match = Some(end_match);
@@ -86,14 +86,15 @@ impl CalibrationValue {
         }
 
         if let Some(first_word_match) = re_start.find(&s) {
-            if first_numeric_loc.is_none() || first_word_match.start() < first_numeric_loc.unwrap() {
+            if first_numeric_loc.is_none() || first_word_match.start() < first_numeric_loc.unwrap()
+            {
                 first_numeric = word_to_number(first_word_match.as_str());
             }
         }
 
         Self {
             first: first_numeric.unwrap(),
-            last: last_numeric.unwrap()
+            last: last_numeric.unwrap(),
         }
     }
 
@@ -104,19 +105,22 @@ impl CalibrationValue {
 
 #[aoc(day1, part1)]
 pub fn part1(input: &[String]) -> u32 {
-    input.iter().map(|s| {
-        let value = CalibrationValue::from_string(s.to_string());
-        value.get()
-    }).sum()
+    input
+        .iter()
+        .map(|s| {
+            let value = CalibrationValue::from_string(s.to_string());
+            value.get()
+        })
+        .sum()
 }
 
 #[aoc(day1, part2)]
 pub fn part2(input: &[String]) -> u32 {
-    input.iter().map(|s| {
-        let value = CalibrationValue::from_string_with_words(s.to_string());
-
-        println!("{:?} => {:?}", s, value);
-
-        value.get()
-    }).sum()
+    input
+        .iter()
+        .map(|s| {
+            let value = CalibrationValue::from_string_with_words(s.to_string());
+            value.get()
+        })
+        .sum()
 }

@@ -1,8 +1,8 @@
-use std::collections::HashSet;
-use std::str::FromStr;
 use aoc_runner_derive::{aoc, aoc_generator};
 use lazy_static::lazy_static;
 use regex::Regex;
+use std::collections::HashSet;
+use std::str::FromStr;
 
 #[derive(Debug, PartialEq, Eq, Hash)]
 struct Part {
@@ -23,13 +23,13 @@ impl Part {
 struct Loc {
     y: usize,
     x: usize,
-    symbol: char
+    symbol: char,
 }
 
 #[derive(Debug)]
 struct Engine {
     parts: Vec<Part>,
-    engine_locations: Vec<Loc>
+    engine_locations: Vec<Loc>,
 }
 
 impl Engine {
@@ -59,7 +59,8 @@ impl Engine {
                 continue;
             }
 
-            let parts_contacting = self.parts
+            let parts_contacting = self
+                .parts
                 .iter()
                 .filter(|p| p.is_contacting(loc.y, loc.x))
                 .collect::<Vec<_>>();
@@ -72,7 +73,6 @@ impl Engine {
         gear_ratio
     }
 }
-
 
 lazy_static! {
     static ref RE_PART: Regex = Regex::new(r"(\d+)").unwrap();
@@ -104,14 +104,14 @@ impl FromStr for Engine {
                 engine_locations.push(Loc {
                     y,
                     x: x_start,
-                    symbol: engine_match.as_str().chars().next().unwrap()
+                    symbol: engine_match.as_str().chars().next().unwrap(),
                 });
             }
         }
 
         Ok(Engine {
             parts,
-            engine_locations
+            engine_locations,
         })
     }
 }

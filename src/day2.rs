@@ -1,7 +1,7 @@
-use std::str::FromStr;
 use aoc_runner_derive::{aoc, aoc_generator};
 use lazy_static::lazy_static;
 use regex::Regex;
+use std::str::FromStr;
 
 #[derive(Debug)]
 pub struct Hand {
@@ -94,7 +94,7 @@ impl FromStr for Game {
         let hands = rest.split(";");
         Ok(Game {
             id,
-            hands: hands.map(|h| h.parse::<_>().unwrap()).collect::<Vec<_>>()
+            hands: hands.map(|h| h.parse::<_>().unwrap()).collect::<Vec<_>>(),
         })
     }
 }
@@ -106,7 +106,10 @@ pub fn input_generator(input: &str) -> Vec<Game> {
 
 #[aoc(day2, part1)]
 pub fn part1(games: &[Game]) -> u32 {
-    games.iter().filter_map(|g| g.is_valid().then_some(g.id)).sum()
+    games
+        .iter()
+        .filter_map(|g| g.is_valid().then_some(g.id))
+        .sum()
 }
 
 #[aoc(day2, part2)]

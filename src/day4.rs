@@ -1,8 +1,8 @@
+use aoc_runner_derive::{aoc, aoc_generator};
+use lazy_static::lazy_static;
+use regex::Regex;
 use std::collections::HashMap;
 use std::str::FromStr;
-use aoc_runner_derive::{aoc, aoc_generator};
-use regex::Regex;
-use lazy_static::lazy_static;
 
 #[derive(Debug, Clone)]
 struct Card {
@@ -16,12 +16,16 @@ impl Card {
 
         match count_winning {
             0 => 0,
-            _ => 2usize.pow((count_winning - 1) as u32)
+            _ => 2usize.pow((count_winning - 1) as u32),
         }
     }
 
     fn count_winning(&self) -> usize {
-        return self.winning_numbers.iter().filter(|n| self.card_numbers.contains(n)).count();
+        return self
+            .winning_numbers
+            .iter()
+            .filter(|n| self.card_numbers.contains(n))
+            .count();
     }
 }
 
@@ -30,7 +34,11 @@ lazy_static! {
 }
 
 fn parse_numbers(s: &str) -> Result<Vec<usize>, ()> {
-    NUM_REGEX.find_iter(s).map(|n| n.as_str().parse()).collect::<Result<_, _>>().map_err(|_| ())
+    NUM_REGEX
+        .find_iter(s)
+        .map(|n| n.as_str().parse())
+        .collect::<Result<_, _>>()
+        .map_err(|_| ())
 }
 
 impl FromStr for Card {
@@ -43,7 +51,10 @@ impl FromStr for Card {
         let winning_numbers = parse_numbers(winning)?;
         let card_numbers = parse_numbers(card)?;
 
-        Ok(Card { winning_numbers, card_numbers })
+        Ok(Card {
+            winning_numbers,
+            card_numbers,
+        })
     }
 }
 
@@ -81,8 +92,7 @@ impl FromStr for Game {
     type Err = ();
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let cards =
-            s.lines().map(|l| l.parse()).collect::<Result<_, _>>()?;
+        let cards = s.lines().map(|l| l.parse()).collect::<Result<_, _>>()?;
 
         Ok(Game { cards })
     }

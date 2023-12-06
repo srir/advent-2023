@@ -1,13 +1,13 @@
+use crate::util::parse_numbers;
+use aoc_runner_derive::{aoc, aoc_generator};
 use std::collections::HashMap;
 use std::str::FromStr;
-use aoc_runner_derive::{aoc, aoc_generator};
-use crate::util::parse_numbers;
 
 #[derive(Debug, Clone)]
 struct SeedRange {
     dest_range_start: usize,
     src_range_start: usize,
-    range_length: usize
+    range_length: usize,
 }
 
 impl SeedRange {
@@ -46,7 +46,7 @@ impl FromStr for SeedRange {
         Ok(SeedRange {
             dest_range_start: numbers[0],
             src_range_start: numbers[1],
-            range_length: numbers[2]
+            range_length: numbers[2],
         })
     }
 }
@@ -89,12 +89,15 @@ impl FromStr for SeedMap {
         let mapping_str = lines[0].strip_suffix(" map:").ok_or(())?;
         let (source_category, dest_category) = mapping_str.split_once("-to-").ok_or(())?;
 
-        let ranges = lines[1..].iter().map(|l| l.parse()).collect::<Result<_, _>>()?;
+        let ranges = lines[1..]
+            .iter()
+            .map(|l| l.parse())
+            .collect::<Result<_, _>>()?;
 
         Ok(SeedMap {
             source_category: source_category.to_string(),
             dest_category: dest_category.to_string(),
-            ranges
+            ranges,
         })
     }
 }
@@ -106,7 +109,7 @@ struct SeedMapSet {
     maps_by_dest: HashMap<String, SeedMap>,
 
     _dest_cache: HashMap<(String, usize), usize>,
-    _location_cache: HashMap<usize, usize>
+    _location_cache: HashMap<usize, usize>,
 }
 
 impl SeedMapSet {
@@ -122,7 +125,7 @@ impl SeedMapSet {
             maps_by_src: maps,
             maps_by_dest,
             _dest_cache: HashMap::new(),
-            _location_cache: HashMap::new()
+            _location_cache: HashMap::new(),
         }
     }
 
@@ -155,7 +158,10 @@ impl SeedMapSet {
     }
 
     fn map_seeds_to_locations(&self) -> Vec<usize> {
-        self.seeds.iter().map(|s| self.map_seed_to_location(*s)).collect()
+        self.seeds
+            .iter()
+            .map(|s| self.map_seed_to_location(*s))
+            .collect()
     }
 
     fn lowest_location(&self) -> usize {
@@ -186,7 +192,10 @@ impl SeedMapSet {
             ranges.push((start, length));
         }
 
-        while !ranges.iter().any(|r| range_contains(r, self.map_location_to_seed(i))) {
+        while !ranges
+            .iter()
+            .any(|r| range_contains(r, self.map_location_to_seed(i)))
+        {
             i += 1;
         }
 

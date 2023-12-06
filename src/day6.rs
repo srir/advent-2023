@@ -1,11 +1,10 @@
-use aoc_runner_derive::{aoc, aoc_generator};
 use crate::util::parse_numbers;
-
+use aoc_runner_derive::{aoc, aoc_generator};
 
 #[derive(Debug, Clone)]
 struct Game {
     time_limit: usize,
-    distance_to_beat: usize
+    distance_to_beat: usize,
 }
 
 impl Game {
@@ -35,10 +34,23 @@ impl Game {
         let time_limits = games.iter().map(|g| g.time_limit).collect::<Vec<_>>();
         let distances_to_beat = games.iter().map(|g| g.distance_to_beat).collect::<Vec<_>>();
 
-        let time_limit = time_limits.iter().map(|t| t.to_string()).collect::<String>().parse().unwrap();
-        let distance_to_beat = distances_to_beat.iter().map(|t| t.to_string()).collect::<String>().parse().unwrap();
+        let time_limit = time_limits
+            .iter()
+            .map(|t| t.to_string())
+            .collect::<String>()
+            .parse()
+            .unwrap();
+        let distance_to_beat = distances_to_beat
+            .iter()
+            .map(|t| t.to_string())
+            .collect::<String>()
+            .parse()
+            .unwrap();
 
-        Game { time_limit, distance_to_beat }
+        Game {
+            time_limit,
+            distance_to_beat,
+        }
     }
 }
 
@@ -51,7 +63,14 @@ fn parse_input(input: &str) -> Vec<Game> {
     let time_limits = parse_numbers(time_limits).unwrap();
     let distances = parse_numbers(distances).unwrap();
 
-    time_limits.iter().zip(distances.iter()).map(|(t, d)| Game { time_limit: *t, distance_to_beat: *d }).collect()
+    time_limits
+        .iter()
+        .zip(distances.iter())
+        .map(|(t, d)| Game {
+            time_limit: *t,
+            distance_to_beat: *d,
+        })
+        .collect()
 }
 
 #[aoc(day6, part1)]
