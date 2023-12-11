@@ -211,29 +211,6 @@ impl Map {
     }
 }
 
-fn print_tilemap(tilemap: &Vec<Vec<Option<TileType>>>) {
-    for row in tilemap {
-        for tile in row {
-            match tile {
-                Some(TileType::Inside) => {
-                    print!("I");
-                }
-                Some(TileType::Outside) => {
-                    print!("O");
-                }
-                Some(TileType::Pipe) => {
-                    print!("*");
-                }
-                None => {
-                    print!(" ");
-                }
-            }
-        }
-
-        println!();
-    }
-}
-
 impl FromStr for Map {
     type Err = ();
 
