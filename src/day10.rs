@@ -28,8 +28,6 @@ struct Map {
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 enum TileType {
-    Inside,
-    Outside,
     Pipe,
 }
 

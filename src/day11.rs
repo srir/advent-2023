@@ -15,10 +15,6 @@ struct StarMap {
 }
 
 impl StarMap {
-    fn get(&self, y: usize, x: usize) -> Option<&Tile> {
-        self.tiles.get(y).and_then(|row| row.get(x))
-    }
-
     fn rows_to_expand(&self) -> Vec<usize> {
         let mut rows = Vec::new();
         for (y, row) in self.tiles.iter().enumerate() {
@@ -77,18 +73,6 @@ impl StarMap {
         }
 
         self.tiles = new_tiles;
-    }
-
-    fn print(&self) {
-        for row in self.tiles.iter() {
-            for tile in row.iter() {
-                match tile {
-                    Tile::Empty => print!("."),
-                    Tile::Galaxy => print!("#"),
-                }
-            }
-            println!();
-        }
     }
 
     fn find_galaxies(&self) -> Vec<(usize, usize)> {
