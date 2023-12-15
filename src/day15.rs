@@ -11,8 +11,8 @@ struct Lens {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 enum Command {
-    AddLens(usize, Lens),
-    RemoveLens(usize, String),
+    AddLens(Lens),
+    RemoveLens(String),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -56,7 +56,7 @@ impl Step {
             .to_string();
 
         if REMOVAL_REGEX.is_match(&s) {
-            Command::RemoveLens(hash(&label), label)
+            Command::RemoveLens(label)
         } else {
             let focal_length = FOCAL_LENGTH_REGEX
                 .captures_iter(&s)
@@ -68,13 +68,10 @@ impl Step {
                 .parse()
                 .unwrap();
 
-            Command::AddLens(
-                hash(&label),
-                Lens {
-                    label,
-                    focal_length,
-                },
-            )
+            Command::AddLens(Lens {
+                label,
+                focal_length,
+            })
         }
     }
 }
@@ -98,7 +95,8 @@ impl InitSequence {
 
         for command in commands {
             match command {
-                Command::RemoveLens(hash, label) => {
+                Command::RemoveLens(label) => {
+                    let hash = hash(&label);
                     if let Some((pos, _)) = boxes[hash]
                         .iter()
                         .enumerate()
@@ -107,7 +105,8 @@ impl InitSequence {
                         boxes[hash].remove(pos);
                     }
                 }
-                Command::AddLens(hash, lens) => {
+                Command::AddLens(lens) => {
+                    let hash = hash(&lens.label);
                     if let Some((pos, _)) = boxes[hash]
                         .iter()
                         .enumerate()
