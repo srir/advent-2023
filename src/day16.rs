@@ -1,5 +1,6 @@
 use aoc_runner_derive::{aoc, aoc_generator};
 use std::str::FromStr;
+use crate::util::Direction;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Tile {
@@ -8,14 +9,6 @@ enum Tile {
     HSplit,
     TLBRMirror,
     BLTRMirror,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Direction {
-    Up,
-    Down,
-    Left,
-    Right,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
