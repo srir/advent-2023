@@ -159,9 +159,14 @@ impl Grid {
     }
 
     fn ultra_crucible_minimal_heat_loss(&self) -> usize {
-        let initial_pos = Pos::new(0, 0, Direction::Right);
+        let initial_pos = Pos {
+            y: 0,
+            x: 0,
+            direction: Direction::Right,
+            steps_taken_in_direction: 1,
+        };
 
-        let (path, cost) = dijkstra(
+        let (_, cost) = dijkstra(
             &initial_pos,
             |pos| {
                 pos.ultra_successors(self)
