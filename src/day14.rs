@@ -14,14 +14,6 @@ struct Platform {
     tiles: Vec<Vec<Option<Rock>>>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Direction {
-    North,
-    South,
-    East,
-    West,
-}
-
 impl Platform {
     fn total_load(&self) -> usize {
         let mut total = 0;

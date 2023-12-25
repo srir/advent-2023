@@ -1,6 +1,6 @@
 use crate::util::Direction;
 use aoc_runner_derive::{aoc, aoc_generator};
-use pathfinding::prelude::{dijkstra, yen};
+use pathfinding::prelude::yen;
 use std::str::FromStr;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
